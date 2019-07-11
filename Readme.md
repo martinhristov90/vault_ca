@@ -1,4 +1,4 @@
-### HashiCorp Vault CA
+## HashiCorp Vault CA
 
 ### Purpose :
 
