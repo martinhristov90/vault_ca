@@ -31,7 +31,7 @@
     ttl                 767h31m16s
     type                service
     ```
-- Note line `policies            [default pkiadmin]`, this line shows the associated policies with the `pkiadmin` user. This policy is permissive enough to operate and administer PKI infrastructure and to enable or disable PKI secret backend, you can review it in `config/policies/PKIadmin.hcl`.
+- Note the line `policies            [default pkiadmin]`, this line shows the associated policies with the `pkiadmin` user. This policy is permissive enough to operate and administer PKI infrastructure and to enable or disable PKI secret backend, you can review it in `config/policies/PKIadmin.hcl`.
 
 
 
