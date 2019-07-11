@@ -36,8 +36,11 @@ vault login -address=${VAULT_ADDR} token=${VAULT_TOKEN} > /dev/null 2>&1
 ## CREATE USER
 echo "Create PKI admin ... change password if needed!!"
 
+# Enabling userpass auth method.
 vault auth enable -address=${VAULT_ADDR} userpass > /dev/null 2>&1
 
+# Writing the PKIadmin policy.
 vault policy write -address=${VAULT_ADDR} pkiadmin /vagrant/configs/policies/PKIadmin.hcl > /dev/null 2>&1
 
+# Creating pkiadmin user and attaching the pkiadmin policy to it.
 vault write -address=${VAULT_ADDR} auth/userpass/users/pkiadmin password=${PKIpass} policies=pkiadmin > /dev/null 2>&1
