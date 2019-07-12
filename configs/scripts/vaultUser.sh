@@ -40,7 +40,28 @@ echo "Create PKI admin ... change password if needed!!"
 vault auth enable -address=${VAULT_ADDR} userpass > /dev/null 2>&1
 
 # Writing the PKIadmin policy.
-vault policy write -address=${VAULT_ADDR} pkiadmin /vagrant/configs/policies/PKIadmin.hcl > /dev/null 2>&1
+vault policy write -address=${VAULT_ADDR} pkiadminpolicy /vagrant/configs/policies/PKIadmin.hcl > /dev/null 2>&1
 
 # Creating pkiadmin user and attaching the pkiadmin policy to it.
-vault write -address=${VAULT_ADDR} auth/userpass/users/pkiadmin password=${PKIpass} policies=pkiadmin > /dev/null 2>&1
+#vault write -address=${VAULT_ADDR} auth/userpass/users/pkiadmin password=${PKIpass} policies=pkiadmin > /dev/null 2>&1
+vault write -address=${VAULT_ADDR} auth/userpass/users/pkiadmin password=${PKIpass} > /dev/null 2>&1
+
+# Creating identity, entity and entity-alias for user pkiadmin.
+# This gets interesting if the user has two or more identites in different auth backends, for example userpass and github, they can be reladed to same identity entity.
+# It alse pkiadmin user from github and pkiadmin from userpass auth backend to have same policies, pretty cool.
+
+# Getting the accessor for userpass auth backend and saving it to a file to be used later.
+echo "Getting accessor of userpass auth..."
+vault auth list -format=json | jq -r '."userpass/".accessor' > _vaultSetup/accessorUserPass.txt
+
+# Creating identity entity for pkiadmin user and attaching the "pkiadmin" policy to it.
+echo "Creating identity entity (pkiAdminEntity) for user pkiadmin..."
+vault write -format=json identity/entity name=pkiAdminEntity | jq -r .data.id > _vaultSetup/pkiAdminEntityID.txt
+
+# Creating alias, it is used to map an entity to user in particular auth backend, the key point here is "name=" it should match the name of the user inside the particular auth backend.
+echo "Creating entity-alias for pkiAdminEntity to refer to pkiadmnin user... "
+vault write identity/entity-alias name=pkiadmin mount_accessor=`cat /home/vagrant/_vaultSetup/accessorUserPass.txt` canonical_id=`cat /home/vagrant/_vaultSetup/pkiAdminEntityID.txt` > /dev/null 2>&1
+
+# Group creation and adding pkiAdminEntity to it, the pkiAdminEntity is going to inherit the polices of the group.
+echo "Creating pkiadmins group"
+vault write identity/group name=pkiadmins policies=pkiadminpolicy member_entity_ids=`cat _vaultSetup/pkiAdminEntityID.txt`  > /dev/null 2>&1
