@@ -9,6 +9,10 @@ path "sys/mounts" {
 }
 
 # Work with pki secrets engine
-path "pki*" {
+path "vault-ca-root*" {
+  capabilities = [ "create", "read", "update", "delete", "list", "sudo" ]
+}
+
+path "vault-ca-intermediate*" {
   capabilities = [ "create", "read", "update", "delete", "list", "sudo" ]
 }

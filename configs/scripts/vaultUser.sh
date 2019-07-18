@@ -63,5 +63,6 @@ echo "Creating entity-alias for pkiAdminEntity to refer to pkiadmnin user... "
 vault write identity/entity-alias name=pkiadmin mount_accessor=`cat /home/vagrant/_vaultSetup/accessorUserPass.txt` canonical_id=`cat /home/vagrant/_vaultSetup/pkiAdminEntityID.txt` > /dev/null 2>&1
 
 # Group creation and adding pkiAdminEntity to it, the pkiAdminEntity is going to inherit the polices of the group.
-echo "Creating pkiadmins group"
+echo "Creating pkiadmins group..."
 vault write identity/group name=pkiadmins policies=pkiadminpolicy member_entity_ids=`cat _vaultSetup/pkiAdminEntityID.txt`  > /dev/null 2>&1
+
