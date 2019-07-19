@@ -67,9 +67,15 @@ echo "Issuing a x509 certificate... "
 vault write -format=json vault-ca-intermediate/issue/localhost_role common_name=localhost ip_sans=127.0.0.1 format=pem ttl=60000| tee >(jq -r .data.certificate > /vaultCerts/certsUI/certificatePublic.pem)  >(jq -r .data.private_key > /vaultCerts/certsUI/certificatePrivate.pem) > /dev/null 2>&1
 chmod 400 /vaultCerts/certsUI/certificatePrivate.pem
 
-# Coping certificates chain and private key to be used for Vault UI.
+# Coping certificates chain and private key to be used for Vault UI. Root CA (third) -> Intermediate CA (second) -> Cert used by UI (first) (top to bottom)
 cat /vaultCerts/certsUI/certificatePublic.pem /vaultCerts/intermediateCA/vault-ca-intermediate.pem /vaultCerts/rootCA/ca.pem > /etc/vault.d/certsUI/chainedCerts.pem
-cp  /vaultCerts/certsUI/certificatePrivate.pem /etc/vault.d/certsUI/
+cp /vaultCerts/certsUI/certificatePrivate.pem /etc/vault.d/certsUI/
+
+# Vault needs to own those files
+chown -R vault:vault /etc/vault.d/certsUI/
+
+# Copying the root CA to be imported in user's browser.
+cp /vaultCerts/rootCA/ca.pem /vagrant/
 
 echo "For more detailed information, look at the script \"vaultPKI.sh\"..."
 
