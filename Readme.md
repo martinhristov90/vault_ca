@@ -1,5 +1,7 @@
 ## HashiCorp Vault CA
 
+![alt Diagram](https://www.lucidchart.com/publicSegments/view/a34cdda8-6355-4447-a430-c41cf289ee16/image.png)
+
 ### Purpose :
 
 - This repository purpose is to create Certification Authority by using HashiCorp Vault.
