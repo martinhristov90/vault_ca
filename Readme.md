@@ -13,6 +13,8 @@
 
 ### What tasks`configs/scripts/vaultUser.sh` script performs:
 
+![alt Diagram](https://www.lucidchart.com/publicSegments/view/d1abd3b5-071b-4361-92e3-de502003b27b/image.png)
+
 - To setup the CA, user `pkiadmin` is going to be created and be given the policies defined in `configs/policies/PKIadmin.hcl`, they are permissive enough to perform day-to-day operation on PKI. 
 - The password of this user is set by using `PKIpass` environment variable in the projects `Vagrantfile`.
 - When the provision finishes, a user named `pkiadmin` is created for you in Vault. You can log-in to the vagrant box using `vagrant ssh` and log-in as `pkiadmin` user by using `vault login -method=userpass username=pkiadmin` and then enter the password you have set, the output should look like this:
