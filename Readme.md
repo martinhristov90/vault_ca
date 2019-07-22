@@ -9,7 +9,9 @@
 ### Instructions :
 
 - Use `git clone git@github.com:martinhristov90/vaultCA.git` to clone the project.
-- For a start, a Vagrant box created with packer is going to be used. It can be found [here](https://github.com/martinhristov90/packerVault). The box comes with HashiCorp Vault server pre-installed, running as Systemd service, as well as simple configuration that listens on default port 8200 and uses `file` as storage backend.
+- Execute `vagrant up` to get the environment up and running.
+
+### How this project works :
 
 ### What tasks`configs/scripts/vaultUser.sh` script performs :
 
@@ -17,6 +19,7 @@
 
 ![alt Diagram](https://www.lucidchart.com/publicSegments/view/c79ee8c9-e3ca-4dda-bbe5-81d18a08bd09/image.png)
 
+- For a start, a Vagrant box created with packer is going to be used. It can be found [here](https://github.com/martinhristov90/packerVault). The box comes with HashiCorp Vault server pre-installed, running as Systemd service, as well as simple configuration that listens on default port 8200 and uses `file` as storage backend.
 - To setup the CA, user `pkiadmin` is going to be created and be given the policies defined in `configs/policies/PKIadmin.hcl`, they are permissive enough to perform day-to-day operation on PKI. 
 - The password of this user is set by using `PKIpass` environment variable in the projects `Vagrantfile`.
 - When the provision finishes, a user named `pkiadmin` is created for you in Vault. You can log-in to the vagrant box using `vagrant ssh` and log-in as `pkiadmin` user by using `vault login -method=userpass username=pkiadmin` and then enter the password you have set, the output should look like this:
@@ -48,15 +51,17 @@
 - Log-in to the Vagrant box by using `vagrant ssh` in project's directory.
 - Execute `sudo systemctl stop vault` to stop Vault.
 - Edit the configuration file for Vault with `vi /etc/vault.d/vault.hcl`, to set the usage of certificates for the UI, it should look like this :
-    ```
+    
+    ```hcl
     backend "file" {
-    path = "/vaultDataDir"
+        path = "/vaultDataDir"
     }
+
     listener "tcp" {
-    address = "0.0.0.0:8200"
-    #tls_disable = 1
-    tls_cert_file = "/etc/vault.d/certsUI/chainedCerts.pem"
-    tls_key_file  = "/etc/vault.d/certsUI/certificatePrivate.pem"
+        address = "0.0.0.0:8200"
+        #tls_disable = 1
+        tls_cert_file = "/etc/vault.d/certsUI/chainedCerts.pem"
+        tls_key_file  = "/etc/vault.d/certsUI/certificatePrivate.pem"
     }
 
     # mlock() should be enabled 
@@ -65,6 +70,7 @@
     # Enable UI
     ui = true
     ```
+    
 - Execute `sudo systemctl start vault` to start Vault.
 - Import the file `ca.pam` from project's directory to your OS keychain, and mark it as trusted. (This step is platform and browser dependable).
 - Access `https://127.0.0.1:8200` from your host's machine browser, secure connection should be establised.
